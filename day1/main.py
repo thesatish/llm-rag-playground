@@ -17,7 +17,7 @@ response = client.chat.completions.create(
     messages=[
         {
             "role": "user",
-            "content": "What is the capital of France?"
+            "content": "can you code in python for prime no"
         }
     ]
 )

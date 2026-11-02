@@ -17,7 +17,7 @@ response = client.chat.completions.create(
     messages=[
         {
             "role": "user",
-            "content": "what is my satish Sen?"
+            "content": "What are the things I should be aware of while learning RAG?"
         }
     ]
 )
