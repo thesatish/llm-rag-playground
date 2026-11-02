@@ -1,0 +1,6 @@
+pip install google-genai
+pip install google-generativeai
+pip install openai
+pip install requests
+pip install litellm
+pip install langchain-google-genai
