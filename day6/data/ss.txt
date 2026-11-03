@@ -2,7 +2,6 @@
 --- ABOUT ---
 Name         : Satish Sen 
 Location     : Gurugram, Haryana
-Native       : Motihari
 Experience   : 4+ Years 
 Device       : M2 MacBook Air (Personal) | Custom Ubuntu Desktop (work)
 
@@ -33,7 +32,6 @@ Tooling :
   
 -- PERSONAL VALUES & MILESTONES --
 Relationships :
-  - Engaged to Soniya (Motihari, 2022)
   - Deep family ties across Motihari and hometown region
   
 Life Philosophy:
