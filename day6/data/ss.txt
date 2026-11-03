@@ -1,0 +1,47 @@
+
+--- ABOUT ---
+Name         : Satish Sen 
+Location     : Gurugram, Haryana
+Native       : Motihari
+Experience   : 4+ Years 
+Device       : M2 MacBook Air (Personal) | Custom Ubuntu Desktop (work)
+
+-- TECHNICAL PORTFOLIO --
+Core Stack : MEAN (MongoDB, Express.js, Angular, Node.js) 
+Enterprise Stack: 
+  - Java 21, Spring Boot 3, Hibernate, PostgreSQL
+  - Spring Kafka, Redis, Redis Streams, JWT
+
+AI / MLOps : 
+  - Conversational RAG systems with LangChain
+  - Vector Databases (Pinecone, Supabase Vector, Weaviate)
+  - LangGraph for complex multi-agent workflows
+  - Local LLMs (Ollama + LM Studio) on macOS and Linux
+  - Containerized ML model serving (Docker)
+
+Architecture : 
+  - Stateless microservice design
+  - Event-driven architecture
+  - Idempotent endpoints
+  - Clean, API-first implementation
+  
+Tooling : 
+  - Git & GitHub (version control)
+  - Docker & Docker Compose
+  - Postman / Insomnia (API testing)
+  - Terminal workflows (bash/zsh aliases, custom prompts)
+  
+-- PERSONAL VALUES & MILESTONES --
+Relationships :
+  - Engaged to Soniya (Motihari, 2022)
+  - Deep family ties across Motihari and hometown region
+  
+Life Philosophy:
+  - Grounded approach to personal and career growth
+  - Balancing technical rigor with long-term stability
+  - Strong sense of responsibility toward family and community
+  
+-- CURRENT FOCUS --
+- Modern AI application development
+- Scaling systems using distributed technologies
+- Continuous learning in AI, backend, and cloud patterns

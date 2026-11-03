@@ -1,0 +1,19 @@
+Satish is a skilled full-stack software developer with over four years of 
+professional experience, currently based in Gurugram, Haryana, 
+with roots connecting him closely to Motihari, Bihar. 
+Technically grounded in the MEAN stack (MongoDB, Express.js, Angular, 
+and Node.js), his engineering journey reflects a deliberate expansion toward 
+enterprise-grade systems—building proficiency in Java 21, Spring Boot 3,
+PostgreSQL, and Hibernate. Alongside backend engineering, Satish actively 
+explores modern AI application development, designing conversational RAG architectures 
+with LangChain, vector databases, and local LLM pipelines.
+
+His workflow is pragmatic and hands-on: he builds clean, 
+stateless architectures utilizing JWT and idempotent workflows, 
+whether developing on an M2 MacBook Air or fine-tuning 
+his Ubuntu Linux desktop with custom terminal aliases. 
+He favors lightweight, native implementations over heavy UI abstractions 
+and values robust distributed systems featuring Docker, Kafka, and Redis. 
+Beyond code, his personal milestones reflect dedication and grounded care—from 
+celebrating his engagement to Soniya in Motihari to maintaining strong ties with 
+his family and exploring long-term personal investments.
