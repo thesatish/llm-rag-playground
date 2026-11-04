@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimal RAG System</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1>Minimal RAG System</h1>
+        <p>Upload documents, inspect retrieval, and ask grounded questions against the indexed corpus.</p>
+      </div>
+
+      <!-- Model Switcher Badge -->
+      <div class="model-badge-wrapper">
+        <div class="model-badge" id="modelBadge">
+          <span class="model-label">Model</span>
+          <span class="model-name">
+            <span id="activeModelName">gpt-5.4-mini</span>
+            <span class="chevron">▼</span>
+          </span>
+        </div>
+        <div class="model-dropdown" id="modelDropdown">
+          <div class="model-option" data-model="gpt-5.4-mini">
+            <div class="model-option-title">gpt-5.4-mini</div>
+            <div class="model-option-desc">Fast standard RAG model</div>
+          </div>
+          <div class="model-option" data-model="gemini-3.5-flash-lite">
+            <div class="model-option-title">gemini-3.5-flash-lite</div>
+            <div class="model-option-desc">Google Gemini Cloud (High Speed)</div>
+          </div>
+          <div class="model-option" data-model="qwen3:4b">
+            <div class="model-option-title">qwen3:4b</div>
+            <div class="model-option-desc">Local Ollama LLM</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="grid-layout">
+      <!-- Column 1: Corpus & Indexed Documents -->
+      <div class="corpus-column">
+        <!-- Corpus Card -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Corpus</h2>
+            <span class="pill-badge" id="corpusBadge">Empty</span>
+          </div>
+          <p class="card-subtitle">PDF, TXT, MD · in-memory index</p>
+
+          <!-- Dropzone -->
+          <div class="upload-dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept=".pdf,.txt,.md,.markdown" style="display: none;">
+            <div id="dropzoneDefault">
+              <div class="upload-title">Choose a document</div>
+              <div class="upload-desc">Upload one file at a time</div>
+            </div>
+            <div class="file-selected-info" id="fileSelectedInfo">
+              <span class="file-name" id="selectedFileName"></span>
+              <button type="button" class="file-clear-btn" id="clearFileBtn" title="Remove file">✕</button>
+            </div>
+          </div>
+
+          <!-- Upload and Index Button -->
+          <button class="btn btn-upload" id="uploadBtn">
+            <span>Upload and index</span>
+          </button>
+
+          <!-- Refresh & Clear Row -->
+          <div class="corpus-actions-row">
+            <button class="btn btn-secondary" id="refreshBtn">Refresh</button>
+            <button class="btn btn-danger-outline" id="clearCorpusBtn">Clear corpus</button>
+          </div>
+        </section>
+
+        <!-- Indexed Documents Card -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Indexed documents</h2>
+            <span class="card-stats" id="indexedStats">0 docs · 0 chunks</span>
+          </div>
+          <p class="card-subtitle">Current in-memory corpus</p>
+
+          <!-- Inset List Box -->
+          <div class="inset-container" id="documentsList">
+            <div class="empty-state">No indexed documents.</div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Column 2: Retrieve -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Retrieve</h2>
+        </div>
+        <p class="card-subtitle">Inspect raw chunk matches before generation.</p>
+
+        <!-- Textarea -->
+        <textarea 
+          class="rag-textarea" 
+          id="retrieveInput" 
+          placeholder="Enter retrieval query"
+          rows="4"
+        ></textarea>
+
+        <!-- Bottom Controls -->
+        <div class="controls-bar">
+          <div class="topk-wrapper">
+            <span class="topk-label">Top K</span>
+            <input type="number" id="retrieveTopK" class="topk-input" value="4" min="1" max="20">
+          </div>
+          <button class="btn btn-run-retrieval" id="runRetrievalBtn">
+            <span>Run retrieval</span>
+          </button>
+        </div>
+
+        <!-- Retrieved Results -->
+        <div class="output-area" id="retrieveOutput">
+          <div class="output-header">
+            <span class="output-title">Matched Chunks (<span id="retrieveCount">0</span>)</span>
+          </div>
+          <div id="retrieveResultsList"></div>
+        </div>
+      </section>
+
+      <!-- Column 3: Ask -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Ask</h2>
+        </div>
+        <p class="card-subtitle">Generate an answer grounded in retrieved context.</p>
+
+        <!-- Textarea -->
+        <textarea 
+          class="rag-textarea" 
+          id="askInput" 
+          placeholder="Ask a grounded question"
+          rows="4"
+        ></textarea>
+
+        <!-- Bottom Controls -->
+        <div class="controls-bar">
+          <div class="topk-wrapper">
+            <span class="topk-label">Top K</span>
+            <input type="number" id="askTopK" class="topk-input" value="4" min="1" max="20">
+          </div>
+          <button class="btn btn-ask-rag" id="askRagBtn">
+            <span>Ask RAG</span>
+          </button>
+        </div>
+
+        <!-- Grounded Answer Output -->
+        <div class="output-area" id="askOutput">
+          <div class="output-header">
+            <span class="output-title">Grounded Answer</span>
+            <span class="pill-badge" id="answerModelBadge"></span>
+          </div>
+          <div class="answer-box">
+            <div id="answerText"></div>
+            <div class="sources-toggle" id="sourcesToggle" style="display: none;">
+              <span>▶ View retrieved context sources (<span id="sourcesCount">0</span>)</span>
+            </div>
+            <div class="sources-content" id="sourcesContent"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
