@@ -1,0 +1,78 @@
+Memory Engineering
+1. Building AI Agents with Memory
+2. Integrating Memory into Our AI Agent
+3. Adding Semantic Memory to Our AI Agent
+
+
+Advanced RAG
+1. Understanding Chunking and Overlap in Advanced RAG
+2. Building a Document Chunking Strategy with Metadata
+3. Generating Embeddings for Document Chunks
+4. Building Semantic Search for Intelligent Retrieval
+5. Building Hybrid Search: Combining Keyword and Semantic Retrieval
+6. Understanding Re-Ranking: Finding the Most Relevant Results
+7. Building a Vector Store with FAISS and ChromaDB
+8. Building Semantic Search with ChromaDB
+9. Evaluating and Improving RAG Retrieval Quality
+10. Building the Complete Advanced RAG Retrieval Pipeline
+11. Building the Final Answer Generator for Advanced RAG
+12. Building the Final Runner for Our Advanced RAG Application
+13. Practical Demo: Run and Test the Complete Advanced RAG Application
+14. Building Retrieval Intelligence with Advanced RAG
+
+
+====================================================================================
+MCP in Depth
+
+Building Multiple MCP Servers: Adding a Weather MCP Server
+Building a Flexible MCP Client for Multiple MCP Servers
+Building an MCP Tool Registry for Multiple Servers
+Practical Demo: Building and Testing the MCP Tool Registry
+Upgrading the AI Planner to Handle Tool Arguments
+Upgrading the AI Agent to Work with Multiple MCP Servers
+Upgrading the Autonomous Agent Loop for Multiple MCP Servers
+Building the Multi-Server AI Agent Runner
+Practical Demo: Testing the Multi-Server AI Agent
+Understanding MCP Tools and Resources
+Understanding MCP Prompts: Reusable Instructions and Templates
+Understanding Remote MCP and HTTP Transport
+Practical Demo: Running a Remote MCP Server with HTTP Transport
+Understanding Authentication and Authorization in Remote MCP
+
+===================================================================================
+Multi-Agent Systems & Orchestration
+
+Understanding Multi-Agent Systems: Building Manager and Worker Agents
+Building Specialized AI Workers: Research, Coding, and Review Agents
+Building the Multi-Agent Manager: Orchestrating Specialized Workers
+Practical Demo: Running the Complete Multi-Agent System
+Making the Multi-Agent Manager Intelligent
+Building the Intelligent Multi-Agent Orchestration Loop
+Practical Demo: Building and Running the Intelligent Multi-Agent Manager
+Building Structured Communication Between AI Agents
+Upgrading the Coding Agent with Reviewer Feedback
+Building Iterative Multi-Agent Orchestration with Review and Revision
+Practical Demo: Building the Iterative Multi-Agent Review and Revision System
+Building Safeguards to Prevent Infinite Agent Revision Loops
+Practical Demo: Preventing Infinite Revision Loops in a Multi-Agent System
+Sequential vs Parallel Agents: Understanding Fan-Out and Fan-In
+Practical Demo: Running Sequential and Parallel AI Agents with Asyncio
+Turning Workers into Autonomous Worker Agents
+
+===================================================================================
+Making Our AI Agent Production-Ready
+Making Our AI Agent Production-Ready: Centralized Configuration
+Centralizing LLM Access in Our AI Agent
+Building Observability with Structured Logging
+Building Reliability with LLM Retries, Backoff, and Timeouts
+Building Agent Security with Secrets, Input Validation, and Permissions
+Building Safe File Access and Protecting Against Prompt Injection
+Optimizing AI Agent Performance: Parallel Execution, LLM Calls, and Context
+Designing the Final Production Architecture for Our AI Agent
+Practical Demo: Integrating the Production-Ready AI Agent Architecture
+
+
+
+
+===================================================================================
+
