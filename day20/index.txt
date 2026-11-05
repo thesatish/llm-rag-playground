@@ -1,1 +1,10 @@
 10_P2
+
+Task Decompose
+Build and test the task composer
+Adding tasks to the agent state
+Building the state aware planner
+Planner to MCP Execution
+Building the compelete agent loop
+Building the answer generator
+Building the agent runner

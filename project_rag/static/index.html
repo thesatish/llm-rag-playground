@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced RAG Production Engine</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Top Navigation Header -->
+  <header class="top-header">
+    <div class="logo-area">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <h1 class="logo-title">Advanced RAG</h1>
+        <p class="logo-subtitle">Enterprise Retrieval-Augmented Generation Platform</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge" id="badge-corpus">Chunks: <span id="stat-chunks">...</span></div>
+      <div class="badge badge-accent" id="badge-model">LLM: <span id="stat-model">...</span></div>
+      <div class="badge" id="badge-embed">Embed: <span id="stat-embed">...</span></div>
+      <button class="btn btn-sm btn-outline" id="btn-reload-samples" title="Reload sample documents">Reload Samples</button>
+      <button class="btn btn-sm btn-outline btn-danger" id="btn-clear-corpus" title="Clear all chunks">Clear</button>
+    </div>
+  </header>
+
+  <!-- Main Tabs -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" data-tab="tab-qa">1. Grounded Q&A (Pipeline)</button>
+    <button class="tab-btn" data-tab="tab-hybrid">2. Hybrid Search Inspector</button>
+    <button class="tab-btn" data-tab="tab-rerank">3. Re-Ranking Visualizer</button>
+    <button class="tab-btn" data-tab="tab-eval">4. Evaluation Benchmark</button>
+    <button class="tab-btn" data-tab="tab-ingest">5. Ingest & Chunking Strategy</button>
+  </nav>
+
+  <!-- Container -->
+  <main class="main-container">
+
+    <!-- TAB 1: Grounded Q&A -->
+    <section id="tab-qa" class="tab-content active">
+      <div class="two-column-layout">
+        <!-- Query Control Panel -->
+        <div class="card control-card">
+          <h2 class="card-title">Intelligent Query Controls</h2>
+          <form id="form-qa">
+            <div class="form-group">
+              <label for="qa-query">User Question</label>
+              <textarea id="qa-query" rows="3" placeholder="e.g. How does Reciprocal Rank Fusion combine dense and lexical search?"></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="qa-hybrid-method">Fusion Strategy</label>
+                <select id="qa-hybrid-method">
+                  <option value="rrf">Reciprocal Rank Fusion (RRF k=60)</option>
+                  <option value="convex">Convex Combination (Alpha weighted)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1" id="group-alpha" style="display:none;">
+                <label for="qa-alpha">Alpha (Dense vs Sparse: <span id="alpha-val">0.5</span>)</label>
+                <input type="range" id="qa-alpha" min="0" max="1" step="0.05" value="0.5">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="qa-top-k">Top Chunks (K)</label>
+                <input type="number" id="qa-top-k" min="1" max="10" value="4">
+              </div>
+              <div class="form-group flex-1">
+                <label for="qa-candidate-k">Initial Candidates (N)</label>
+                <input type="number" id="qa-candidate-k" min="5" max="30" value="12">
+              </div>
+            </div>
+
+            <div class="toggles-grid">
+              <label class="checkbox-label">
+                <input type="checkbox" id="qa-cache" checked>
+                <span>Semantic Cache</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="qa-multiquery">
+                <span>Multi-Query Expansion</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="qa-hyde">
+                <span>HyDE (Hypothetical Doc)</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" id="btn-submit-qa">Execute RAG Pipeline</button>
+          </form>
+
+          <!-- Pre-canned Suggestions -->
+          <div class="suggestions-box">
+            <span class="suggestions-title">Try sample questions:</span>
+            <div class="chip-list">
+              <button class="chip" data-q="What is the sliding window stride formula in chunking?">Sliding window stride</button>
+              <button class="chip" data-q="How does Reciprocal Rank Fusion combine search rankings?">Reciprocal Rank Fusion</button>
+              <button class="chip" data-q="Explain how HNSW graph layers enable approximate nearest neighbor search.">HNSW Graph Layers</button>
+              <button class="chip" data-q="What is the difference between bi-encoders and cross-encoders?">Bi-Encoder vs Cross-Encoder</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Response & Telemetry Panel -->
+        <div class="card result-card">
+          <div class="card-header-row">
+            <h2 class="card-title">Grounded Answer & Telemetry</h2>
+            <div id="qa-telemetry-badge" class="telemetry-pill">Idle</div>
+          </div>
+
+          <div id="qa-loading" class="spinner-container" style="display:none;">
+            <div class="spinner"></div>
+            <p>Executing Multi-Stage Retrieval & Synthesis...</p>
+          </div>
+
+          <div id="qa-output" class="output-container" style="display:none;">
+            <!-- Routing Banner -->
+            <div id="qa-route-banner" class="banner banner-info"></div>
+
+            <!-- Answer Box -->
+            <div class="answer-box">
+              <div class="answer-header">
+                <span class="answer-label">Synthesized Grounded Response</span>
+                <span id="qa-cache-badge" class="badge badge-cache" style="display:none;">⚡ 0ms Semantic Cache Hit</span>
+              </div>
+              <div id="qa-answer-text" class="markdown-body"></div>
+            </div>
+
+            <!-- Citations -->
+            <div class="citations-section">
+              <h3 class="section-title">Verified Citations & Provenance</h3>
+              <div id="qa-citations-list" class="citations-grid"></div>
+            </div>
+
+            <!-- Telemetry Timing Breakdown -->
+            <div class="telemetry-section">
+              <h3 class="section-title">Pipeline Stage Latency Breakdown</h3>
+              <div id="qa-telemetry-bars" class="telemetry-bars"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Hybrid Search Inspector -->
+    <section id="tab-hybrid" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">Dense Semantic vs Lexical BM25 vs Hybrid Fusion</h2>
+        <p class="card-desc">Compare how pure Dense Embeddings (ChromaDB), pure Lexical Search (BM25 Okapi), and Reciprocal Rank Fusion rank the same query.</p>
+
+        <div class="form-row align-center">
+          <div class="form-group flex-2">
+            <input type="text" id="hybrid-query" placeholder="Enter query to compare retrieval paradigms...">
+          </div>
+          <button class="btn btn-primary" id="btn-run-hybrid">Compare Search Types</button>
+        </div>
+
+        <div class="comparison-grid">
+          <!-- Dense Semantic Column -->
+          <div class="col-panel">
+            <div class="col-header dense-header">Dense Vector Search (ChromaDB)</div>
+            <div id="col-dense-results" class="results-list"></div>
+          </div>
+          <!-- Lexical BM25 Column -->
+          <div class="col-panel">
+            <div class="col-header lexical-header">Sparse Lexical Search (BM25 Okapi)</div>
+            <div id="col-bm25-results" class="results-list"></div>
+          </div>
+          <!-- Hybrid Fusion Column -->
+          <div class="col-panel">
+            <div class="col-header hybrid-header">Hybrid Fusion (RRF k=60)</div>
+            <div id="col-hybrid-results" class="results-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Re-Ranking Visualizer -->
+    <section id="tab-rerank" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">Two-Stage Retrieval: Candidate Re-Ranking</h2>
+        <p class="card-desc">Visualizes how a Cross-Encoder re-ranks candidate passages retrieved in Stage 1, adjusting ranks based on fine-grained token cross-attention.</p>
+
+        <div class="form-row align-center">
+          <div class="form-group flex-2">
+            <input type="text" id="rerank-query" placeholder="Enter query for re-ranking test...">
+          </div>
+          <button class="btn btn-primary" id="btn-run-rerank">Execute Re-Ranking</button>
+        </div>
+
+        <div class="rerank-table-container">
+          <table class="data-table" id="table-rerank">
+            <thead>
+              <tr>
+                <th>Final Rank</th>
+                <th>Initial Rank</th>
+                <th>Rank Delta</th>
+                <th>Chunk ID</th>
+                <th>Re-Rank Score</th>
+                <th>Source & Section</th>
+                <th>Text Preview</th>
+              </tr>
+            </thead>
+            <tbody id="rerank-table-body">
+              <tr><td colspan="7" class="empty-state">Execute a query above to inspect re-ranking transitions.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Evaluation Benchmark -->
+    <section id="tab-eval" class="tab-content">
+      <div class="card">
+        <div class="card-header-row">
+          <div>
+            <h2 class="card-title">RAG Quality Evaluation Suite</h2>
+            <p class="card-desc">Evaluates standard Information Retrieval (IR) metrics and the RAG Triad across test queries.</p>
+          </div>
+          <button class="btn btn-success" id="btn-run-eval">Run Benchmark</button>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">Hit Rate @ 5</div>
+            <div class="kpi-value" id="kpi-hit-rate">--</div>
+            <div class="kpi-sub">Target chunk in top-5</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Mean Reciprocal Rank (MRR)</div>
+            <div class="kpi-value" id="kpi-mrr">--</div>
+            <div class="kpi-sub">Average 1 / rank</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">NDCG @ 5</div>
+            <div class="kpi-value" id="kpi-ndcg">--</div>
+            <div class="kpi-sub">Discounted cumulative gain</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Context Relevance</div>
+            <div class="kpi-value" id="kpi-ctx-rel">--</div>
+            <div class="kpi-sub">RAG Triad (Purity)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Faithfulness</div>
+            <div class="kpi-value" id="kpi-faith">--</div>
+            <div class="kpi-sub">RAG Triad (Zero Hallucination)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Answer Relevance</div>
+            <div class="kpi-value" id="kpi-ans-rel">--</div>
+            <div class="kpi-sub">RAG Triad (Directness)</div>
+          </div>
+        </div>
+
+        <!-- Evaluation Details Table -->
+        <h3 class="section-title mt-4">Per-Query Benchmark Breakdown</h3>
+        <table class="data-table" id="table-eval">
+          <thead>
+            <tr>
+              <th>Query</th>
+              <th>Target Chunk</th>
+              <th>Hit Rate@5</th>
+              <th>MRR@5</th>
+              <th>NDCG@5</th>
+              <th>Context Rel</th>
+              <th>Faithfulness</th>
+              <th>Answer Rel</th>
+            </tr>
+          </thead>
+          <tbody id="eval-table-body">
+            <tr><td colspan="8" class="empty-state">Click 'Run Benchmark' to execute the automated evaluation suite.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 5: Ingest & Chunking Strategy -->
+    <section id="tab-ingest" class="tab-content">
+      <div class="two-column-layout">
+        <!-- Ingest Card -->
+        <div class="card">
+          <h2 class="card-title">Document Ingestion & Chunking</h2>
+          <p class="card-desc">Ingest custom text or upload Markdown/TXT/PDF documents with automatic recursive semantic chunking and metadata enrichment.</p>
+
+          <form id="form-ingest-text">
+            <div class="form-group">
+              <label for="ingest-doc-id">Document ID</label>
+              <input type="text" id="ingest-doc-id" placeholder="e.g. system_architecture_2026">
+            </div>
+            <div class="form-group">
+              <label for="ingest-source-name">Source Filename</label>
+              <input type="text" id="ingest-source-name" placeholder="architecture.md">
+            </div>
+            <div class="form-group">
+              <label for="ingest-text-content">Content (Markdown or Text)</label>
+              <textarea id="ingest-text-content" rows="8" placeholder="Paste markdown or raw text with headers (# Section)..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Ingest & Vectorize Document</button>
+          </form>
+        </div>
+
+        <!-- File Upload & Status -->
+        <div class="card">
+          <h2 class="card-title">Upload File</h2>
+          <div class="file-drop-area" id="drop-area">
+            <p>Drag and drop Markdown, TXT, or PDF file here, or click to browse</p>
+            <input type="file" id="file-input" accept=".md,.txt,.pdf" style="display:none;">
+            <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">Browse File</button>
+          </div>
+          <div id="upload-status" class="mt-3"></div>
+
+          <h3 class="section-title mt-4">Corpus Summary</h3>
+          <div class="stats-summary" id="corpus-stats-summary">Loading corpus statistics...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
