@@ -60,7 +60,7 @@ Practical Demo: Running Sequential and Parallel AI Agents with Asyncio
 Turning Workers into Autonomous Worker Agents
 
 ===================================================================================
-Making Our AI Agent Production-Ready
+
 Making Our AI Agent Production-Ready: Centralized Configuration
 Centralizing LLM Access in Our AI Agent
 Building Observability with Structured Logging

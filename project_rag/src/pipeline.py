@@ -133,6 +133,8 @@ class AdvancedRAGPipeline:
         # Stage 1: Query Routing
         t0 = time.time()
         routing = self.intelligence.route_query(query)
+        print("\n routing::::", routing)
+        print()
         telemetry["routing_sec"] = round(time.time() - t0, 4)
 
         if routing["route"] == "DIRECT_LLM":
@@ -158,6 +160,7 @@ class AdvancedRAGPipeline:
 
         # Stage 3: First-Stage Hybrid Retrieval
         t2 = time.time()
+        print("Stage 2: search_queries:::::", search_queries )
         candidate_pool: List[Dict[str, Any]] = []
         for sq in search_queries:
             if hybrid_method == "rrf":
@@ -177,16 +180,23 @@ class AdvancedRAGPipeline:
         # Stage 4: Second-Stage Cross-Encoder Re-Ranking
         t3 = time.time()
         reranked_chunks = self.reranker.rerank(query, candidate_pool, top_k=top_k)
+        print("statge 4 reranked_chunks:::::", reranked_chunks)
         telemetry["reranking_sec"] = round(time.time() - t3, 4)
 
         # Stage 5: Corrective RAG (CRAG) Document Filtering
         t4 = time.time()
         final_chunks = self.intelligence.grade_documents_crag(query, reranked_chunks)
+        print("Statge 5 : final_chunks:::::::", final_chunks)
         telemetry["crag_filter_sec"] = round(time.time() - t4, 4)
 
         # Stage 6: Grounded Generation with Citations
         t5 = time.time()
+        print("query::::", query)
+        
         gen_result = self.generator.generate_answer(query, context_chunks=final_chunks)
+        
+        print("Statge 6: gen_result::::::::", gen_result)
+        
         telemetry["generation_sec"] = round(time.time() - t5, 4)
 
         total_elapsed = round(time.time() - pipeline_start, 4)
@@ -203,7 +213,12 @@ class AdvancedRAGPipeline:
             "model_used": gen_result["model"],
             "usage": gen_result.get("usage", {}),
             "telemetry": telemetry,
-            "cache_hit": False
+            "cache_hit": False,
+            "reranked_chunks" : reranked_chunks,
+            "gen_result" : gen_result,
+            "final_chunks" :final_chunks,
+            
+            
         }
 
         # Store in Semantic Cache
